@@ -40,7 +40,7 @@ jobs:
 
       - run:
           name: run-audit-ci
-          command: npx audit-ci@^6 --config ./audit-ci.jsonc
+          command: npx audit-ci@^6
   
       - run:
           name: install-npm
