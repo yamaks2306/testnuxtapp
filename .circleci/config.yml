@@ -74,9 +74,10 @@ jobs:
             echo ${DOCKER_PASSWORD} | docker login ghcr.io -u ${DOCKER_USER} --password-stdin && \
             docker run --security-opt seccomp=unconfined \
               --security-opt apparmor=unconfined \
-              -v $(pwd):/home/build \
+              -v $(pwd):/home/build/app \
               -v /home/circleci/.docker/config.json:/home/build/.docker/config.json \
               registry.werf.io/werf/werf:latest \
+              cd app && \
               werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
               --repo-container-registry=github \
               --repo-github-token=${DOCKER_PASSWORD}
