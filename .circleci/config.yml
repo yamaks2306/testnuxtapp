@@ -64,13 +64,15 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: docker-login
-          command: docker login ghcr.io -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+      # - run:
+      #     name: docker-login
+      #     command: docker login ghcr.io -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
 
       - run:
           name: build-and-publish
-          command: werf bundle publish --repo=ghcr.io/apirone/testnuxtapp
+          command: werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
+                    --repo-container-registry=github \
+                    --repo-github-token=${DOCKER_PASSWORD}
       
 
 workflows:
