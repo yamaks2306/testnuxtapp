@@ -75,7 +75,7 @@ jobs:
             docker run --security-opt seccomp=unconfined \
               --security-opt apparmor=unconfined \
               -v $(pwd):/home/build \
-              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v /home/circleci/.docker/config.json:/home/build/.docker/config.json \
               registry.werf.io/werf/werf:latest \
               werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
               --repo-container-registry=github \
