@@ -24,7 +24,7 @@ jobs:
           name: Run linter
           command: npm run lint
 
-  audit:
+  requirements_audit:
     docker:
       - image: cimg/node:lts
     steps:
@@ -46,7 +46,7 @@ jobs:
           name: install-npm
           command: "npm install --no-audit"
 
-  sast:
+  nodejsscan:
     docker:
       - image: cimg/python:3.9.6
     steps:
@@ -69,9 +69,9 @@ workflows:
               only:
                 - main
                 - master
-      - audit:
+      - requirements_audit:
           requires:
             - linter
-      - sast:
+      - nodejsscan:
           requires:
             - linter

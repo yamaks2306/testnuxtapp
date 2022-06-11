@@ -1,0 +1,8 @@
+project: testnuxtapp
+configVersion: 1
+deploy:
+  namespace: '[[ env ]]'
+  namespaceSlug: false
+---
+image: testnuxtapp
+dockerfile: Dockerfile

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name  }}-deployment
+{{- $environment := index .Values .Values.werf.env }}
+spec:
+  replicas: {{ $environment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 3344
+        runAsGroup: 3344
+        fsGroup: 3000
+        seccompProfile: 
+          type: "RuntimeDefault"
+      containers:
+      - name: {{ .Release.Name }}
+        image: {{ .Values.werf.image.testnuxtapp }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name  }}-config
+        imagePullPolicy: {{ $environment.imagePullPolicy }}
+        resources:
+{{ toYaml $environment.resources | indent 10 }}          
+        ports:
+          - containerPort: {{ $environment.port }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - NET_BIND_SERVICE
+      imagePullSecrets:
+      - name: {{ .Values.werf.env }}-secrets-dockerhub-cred
+      {{- if eq .Values.werf.env "production" }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                    - {{ .Release.Name }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}

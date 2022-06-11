@@ -1,0 +1,15 @@
+stage:
+  port: 3000
+  resources:
+    requests:
+      memory: "384Mi"
+      cpu: "200m"
+    limits:
+      memory: "512Mi"
+      cpu: "1000m"
+  replicas: 1
+  imagePullPolicy: Always
+  gtm: "GTM-XXXXXXXXXX"
+  config:
+    host: apirone-stg.beastybit.com
+  secretName: stage-tls

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name  }}-service
+{{- $environment := index .Values .Values.werf.env }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Release.Name  }}
+  ports:
+  - name: http-port
+    protocol: TCP
+    port: {{ $environment.port }}
+    targetPort: {{ $environment.port }}
