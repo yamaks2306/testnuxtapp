@@ -73,6 +73,7 @@ jobs:
           command: |
             docker run --security-opt seccomp=unconfined \
               --security-opt apparmor=unconfined \
+              -v $(pwd):/home/build \
               registry.werf.io/werf/werf:latest \
               werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
               --repo-container-registry=github \
