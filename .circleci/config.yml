@@ -71,6 +71,7 @@ jobs:
       - run:
           name: build-and-publish
           command: |
+            echo ${DOCKER_PASSWORD} | docker login ghcr.io -u ${DOCKER_USER} --password-stdin && \
             docker run --security-opt seccomp=unconfined \
               --security-opt apparmor=unconfined \
               -v $(pwd):/home/build \
