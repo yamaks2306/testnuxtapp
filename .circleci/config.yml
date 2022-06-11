@@ -59,8 +59,8 @@ jobs:
            command: njsscan .
 
   werf_bundle_publish:
-    docker:
-      - image: ghcr.io/werf/werf:latest
+    machine:
+      image: ubuntu-2004:202010-01
     steps:
       - checkout
 
@@ -70,7 +70,10 @@ jobs:
 
       - run:
           name: build-and-publish
-          command: werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
+          command: docker run \
+                    --security-opt seccomp=unconfined --security-opt apparmor=unconfined \
+                    registry.werf.io/werf/werf:latest \
+                    werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
                     --repo-container-registry=github \
                     --repo-github-token=${DOCKER_PASSWORD}
       
