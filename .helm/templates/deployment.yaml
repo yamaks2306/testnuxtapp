@@ -39,7 +39,8 @@ spec:
             add:
               - NET_BIND_SERVICE
       imagePullSecrets:
-      - name: {{ .Values.werf.env }}-secrets-dockerhub-cred
+      #- name: {{ .Values.werf.env }}-secrets-dockerhub-cred
+      - name: secret-ghcr.io-cred
       {{- if eq .Values.werf.env "production" }}
       affinity:
         podAntiAffinity:
