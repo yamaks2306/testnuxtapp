@@ -94,6 +94,6 @@ workflows:
       # - nodejsscan:
       #     requires:
       #       - linter
-      - werf_bundle_publish:
+      - werf_bundle_publish
           # requires:
           #   - nodejsscan
