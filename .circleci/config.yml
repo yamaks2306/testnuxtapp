@@ -1,7 +1,7 @@
 version: 2
 
 jobs:
-  lint:
+  linter:
     docker:
       - image: cimg/node:lts
     steps:
@@ -45,18 +45,33 @@ jobs:
       - run:
           name: install-npm
           command: "npm install --no-audit"
+
+  sast:
+    docker:
+      - image: cimg/python:3.9.6
+    steps:
+      - checkout
+      - run:
+          name: Install njsscan
+          command: pip install --upgrade njsscan
+      - run:
+           name: njsscan check
+           command: njsscan .
       
 
 workflows:
   version: 2
   ci:
     jobs:
-      - lint:
+      - linter:
           filters:
             branches:
               only:
                 - main
                 - master
       - audit:
+          requires:
+            - lint
+      - sast:
           requires:
             - lint
