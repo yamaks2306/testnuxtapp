@@ -69,7 +69,8 @@ jobs:
             chmod +x install.sh && \
             ./install.sh --ci && \
             source "$("/home/circleci/bin/trdl" use werf "1.2" "stable")" && \
-            rm -f install.sh
+            rm -f install.sh && \
+            echo 'export PATH=$PATH:/home/circleci/bin' >> ~/.bashrc
 
       - checkout
 
