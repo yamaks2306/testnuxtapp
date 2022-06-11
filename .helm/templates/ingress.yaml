@@ -22,7 +22,7 @@ spec:
   - host: {{ $environment.config.host }}
     http:
       paths:
-      - path: /tst
+      - path: /
         pathType: Prefix
         backend:
           service:

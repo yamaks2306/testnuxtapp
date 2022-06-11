@@ -11,5 +11,5 @@ stage:
   imagePullPolicy: Always
   gtm: "GTM-XXXXXXXXXX"
   config:
-    host: apirone-stg.beastybit.com
+    host: tst.yastrebov.email
   secretName: stage-tls

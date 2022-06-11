@@ -57,6 +57,20 @@ jobs:
       - run:
            name: njsscan check
            command: njsscan .
+
+  werf_bundle_publish:
+    docker:
+      - image: ghcr.io/werf/werf:latest
+    steps:
+      - checkout
+
+      - run:
+          name: docker-login
+          command: docker login ghcr.io -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+
+      - run:
+          name: build-and-publish
+          command: werf bundle publish --repo=ghcr.io/apirone/testnuxtapp
       
 
 workflows:
@@ -75,3 +89,6 @@ workflows:
       - nodejsscan:
           requires:
             - linter
+      - werf_bundle_publish:
+          requires:
+            - nodejsscan
