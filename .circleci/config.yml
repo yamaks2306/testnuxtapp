@@ -62,6 +62,14 @@ jobs:
     machine:
       image: ubuntu-2004:202010-01
     steps:
+      - run:
+          name: install_werf
+          command: |
+            curl -sSLO https://werf.io/install.sh && \
+            chmod +x install.sh && \
+            sh ./install.sh --ci && \
+            source "$(~/bin/trdl use werf 1.2 stable)"
+
       - checkout
 
       # - run:
@@ -72,15 +80,8 @@ jobs:
           name: build-and-publish
           command: |
             echo ${DOCKER_PASSWORD} | docker login ghcr.io -u ${DOCKER_USER} --password-stdin && \
-            docker run --security-opt seccomp=unconfined \
-              --security-opt apparmor=unconfined \
-              -v $(pwd):/home/build/app \
-              -v /home/circleci/.docker/config.json:/home/build/.docker/config.json \
-              registry.werf.io/werf/werf:latest \
-              werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
+            werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
               --repo-container-registry=github \
-              --repo-github-token=${DOCKER_PASSWORD} \
-              --dir='/home/build/app'
       
 
 workflows:
