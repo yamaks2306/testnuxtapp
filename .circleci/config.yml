@@ -71,7 +71,7 @@ workflows:
                 - master
       - audit:
           requires:
-            - lint
+            - linter
       - sast:
           requires:
-            - lint
+            - linter
