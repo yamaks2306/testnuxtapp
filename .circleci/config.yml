@@ -1,9 +1,15 @@
-version: 2
+version: 2.1
+
+executors:
+  nodejs:
+    docker:
+      - image: cimg/node:lts
+  
+    working_directory: /tmp
 
 jobs:
   linter:
-    docker:
-      - image: cimg/node:lts
+    executor: nodejs
     steps:
       - checkout
 
@@ -25,8 +31,7 @@ jobs:
           command: npm run lint
 
   requirements_audit:
-    docker:
-      - image: cimg/node:lts
+    executor: nodejs
     steps:
       - checkout
 
@@ -58,50 +63,83 @@ jobs:
            name: njsscan check
            command: njsscan .
 
-  werf_bundle_publish:
-    machine:
-      image: ubuntu-2004:202010-01
+  docker_build:
+    docker: docker:20.10.17-git
     steps:
-      - run:
-          name: install_werf
-          command: |
-            curl -sSLO https://werf.io/install.sh && \
-            chmod +x install.sh && \
-            ./install.sh --ci && \
-            source "$("/home/circleci/bin/trdl" use werf "1.2" "stable")" && \
-            rm -f install.sh && \
-            echo 'export PATH=$PATH:/home/circleci/bin' >> ~/.bashrc
-
       - checkout
-
-      # - run:
-      #     name: docker-login
-      #     command: docker login ghcr.io -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
-
+      - setup_remote_docker
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
       - run:
-          name: build-and-publish
+          name: Load Docker image layer cache
           command: |
-            echo ${DOCKER_PASSWORD} | docker login ghcr.io -u ${DOCKER_USER} --password-stdin && \
-            werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
-              --repo-container-registry=github \
+            set +o pipefail
+            docker load -i /caches/app.tar | true
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build --cache-from=app -t app .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/app.tar
+      
+
+  # werf_bundle_publish:
+  #   machine:
+  #     image: ubuntu-2004:202010-01
+  #   steps:
+  #     - run:
+  #         name: install_werf
+  #         command: |
+  #           curl -sSLO https://werf.io/install.sh && \
+  #           chmod +x install.sh && \
+  #           ./install.sh --ci && \
+  #           source "$("/home/circleci/bin/trdl" use werf "1.2" "stable")" && \
+  #           rm -f install.sh && \
+  #           echo 'export PATH=$PATH:/home/circleci/bin' >> ~/.bashrc
+
+  #     - checkout
+
+  #     # - run:
+  #     #     name: docker-login
+  #     #     command: docker login ghcr.io -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+
+  #     - run:
+  #         name: build-and-publish
+  #         command: |
+  #           echo ${DOCKER_PASSWORD} | docker login ghcr.io -u ${DOCKER_USER} --password-stdin && \
+  #           werf bundle publish --repo=ghcr.io/apirone/testnuxtapp \
+  #             --repo-container-registry=github \
       
 
 workflows:
   version: 2
   ci:
     jobs:
-      # - linter:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - main
-      #           - master
-      # - requirements_audit:
-      #     requires:
-      #       - linter
-      # - nodejsscan:
-      #     requires:
-      #       - linter
-      - werf_bundle_publish
+      - linter:
+          filters:
+            branches:
+              only:
+                - main
+                - master
+      - requirements_audit:
+          requires:
+            - linter
+      - nodejsscan:
+          requires:
+            - linter
+      - docker_build:
+          reqires:
+            - nodejsscan
+      #- werf_bundle_publish
           # requires:
           #   - nodejsscan
