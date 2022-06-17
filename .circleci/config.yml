@@ -4,8 +4,6 @@ executors:
   nodejs:
     docker:
       - image: cimg/node:lts
-  
-    working_directory: /tmp
 
 jobs:
   linter:
