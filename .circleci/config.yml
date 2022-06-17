@@ -139,7 +139,7 @@ workflows:
           requires:
             - linter
       - docker_build:
-          reqires:
+          requires:
             - nodejsscan
       #- werf_bundle_publish
           # requires:
