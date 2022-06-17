@@ -64,7 +64,8 @@ jobs:
            command: njsscan .
 
   docker_build:
-    docker: docker:20.10.17-git
+    docker: 
+      - image: docker:20.10.17-git
     steps:
       - checkout
       - setup_remote_docker
