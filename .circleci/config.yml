@@ -105,6 +105,7 @@ jobs:
   trivy_scan:
     executor: docker
     steps:
+      - setup_remote_docker
       - attach_workspace:
           at: caches
       - run:
@@ -112,7 +113,6 @@ jobs:
           command: |
             apk add --update-cache --upgrade curl
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-      - run: ls -l
       - run:
           name: scan image
           command: |
