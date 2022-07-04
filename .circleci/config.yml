@@ -4,6 +4,10 @@ executors:
   nodejs:
     docker:
       - image: cimg/node:lts
+  trivy:
+    docker:
+      - image: aquasec/trivy
+
 
 jobs:
   linter:
@@ -80,17 +84,32 @@ jobs:
       - run:
           name: Build application Docker image
           command: |
-            docker build --cache-from=app -t app .
+            docker build --cache-from=app -t testnuxtapp:latest .
       - run:
           name: Save Docker image layer cache
           command: |
             mkdir -p /caches
-            docker save -o /caches/app.tar app
+            docker save -o /caches/app.tar testnuxtapp:latest
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
             - /caches/app.tar
-      
+      - persist_to_workspace:
+          root: caches
+          paths:
+            - app.tar
+
+  trivy_scan:
+    executor: trivy
+    steps:
+      - attach_workspace:
+          at: /caches
+      - run:
+          name: scan image
+          command: |
+            docker load -i /cahces/app.tar
+            trivy --exit-code 0 --no-progress testnuxtapp:latest
+
 
   # werf_bundle_publish:
   #   machine:
@@ -139,6 +158,9 @@ workflows:
       - docker_build:
           requires:
             - nodejsscan
+      - trivy_scan:
+          requires:
+            - docker_build
       #- werf_bundle_publish
           # requires:
           #   - nodejsscan
