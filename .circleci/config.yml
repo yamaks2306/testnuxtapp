@@ -68,7 +68,6 @@ jobs:
   docker_build:
     docker: 
       - image: docker:20.10.17-git
-    working_directory: /tmp
     steps:
       - checkout
       - setup_remote_docker
@@ -89,12 +88,12 @@ jobs:
       - run:
           name: Save Docker image layer cache
           command: |
-            mkdir -p /caches
-            docker save -o /caches/app.tar testnuxtapp:latest
+            mkdir -p caches
+            docker save -o caches/app.tar testnuxtapp:latest
       - save_cache:
           key: v1-{{ .Branch }}-{{ epoch }}
           paths:
-            - /caches/app.tar
+            - caches/app.tar
       - persist_to_workspace:
           root: caches
           paths:
