@@ -100,10 +100,15 @@ jobs:
             - app.tar
 
   trivy_scan:
-    executor: trivy
+    executor: docker
     steps:
       - attach_workspace:
           at: /tmp/caches
+      - run:
+          name: install trivy
+          command: |
+            apk add --update-cache --upgrade curl
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
       - run:
           name: scan image
           command: |
