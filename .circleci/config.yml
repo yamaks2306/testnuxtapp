@@ -78,12 +78,12 @@ jobs:
           keys:
             - v1-{{ .Branch }}
           paths:
-            - /caches/app.tar
+            - caches/app.tar
       - run:
           name: Load Docker image layer cache
           command: |
             set +o pipefail
-            docker load -i /caches/app.tar | true
+            docker load -i caches/app.tar | true
       - run:
           name: Build application Docker image
           command: |
@@ -115,7 +115,7 @@ jobs:
       - run:
           name: scan image
           command: |
-            docker load -i /tmp/cahces/app.tar
+            docker load -i cahces/app.tar
             trivy --exit-code 0 --no-progress testnuxtapp:latest
 
 
