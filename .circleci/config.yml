@@ -106,7 +106,7 @@ jobs:
     executor: docker
     steps:
       - attach_workspace:
-          at: /tmp/caches
+          at: caches
       - run:
           name: install trivy
           command: |
