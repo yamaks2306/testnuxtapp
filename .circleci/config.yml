@@ -74,16 +74,16 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - restore_cache:
-          keys:
-            - v1-{{ .Branch }}
-          paths:
-            - caches/app.tar
-      - run:
-          name: Load Docker image layer cache
-          command: |
-            set +o pipefail
-            docker load -i caches/app.tar | true
+      # - restore_cache:
+      #     keys:
+      #       - v1-{{ .Branch }}
+      #     paths:
+      #       - caches/app.tar
+      # - run:
+      #     name: Load Docker image layer cache
+      #     command: |
+      #       set +o pipefail
+      #       docker load -i caches/app.tar | true
       - run:
           name: Build application Docker image
           command: |
@@ -93,10 +93,10 @@ jobs:
           command: |
             mkdir -p caches
             docker save -o caches/app.tar testnuxtapp:latest
-      - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - caches/app.tar
+      # - save_cache:
+      #     key: v1-{{ .Branch }}-{{ epoch }}
+      #     paths:
+      #       - caches/app.tar
       - persist_to_workspace:
           root: caches
           paths:
@@ -116,7 +116,7 @@ jobs:
       - run:
           name: scan image
           command: |
-            docker load -i cahces/app.tar
+            docker load -i caches/app.tar
             trivy --exit-code 0 --no-progress testnuxtapp:latest
 
 
