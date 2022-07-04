@@ -50,7 +50,7 @@ jobs:
 
       - run:
           name: run-audit-ci
-          command: npx audit-ci@^6 --config ./audit-ci.jsonc
+          command: npx audit-ci@^6 --config ./audit-ci.jsonc || true
   
       - run:
           name: install-npm
@@ -112,6 +112,7 @@ jobs:
           command: |
             apk add --update-cache --upgrade curl
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+      - run: ls -l
       - run:
           name: scan image
           command: |
