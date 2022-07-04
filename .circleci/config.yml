@@ -68,9 +68,11 @@ jobs:
   docker_build:
     docker: 
       - image: docker:20.10.17-git
+    working_directory: /tmp
     steps:
       - checkout
       - setup_remote_docker
+      - run: mkdir -p workspace
       - restore_cache:
           keys:
             - v1-{{ .Branch }}
@@ -103,7 +105,7 @@ jobs:
     executor: trivy
     steps:
       - attach_workspace:
-          at: /caches
+          at: /tmp/caches
       - run:
           name: scan image
           command: |
